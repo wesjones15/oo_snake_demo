@@ -1,7 +1,11 @@
+package game.snake;
+
+import game.Segment;
+
 import java.util.Random;
 
 public class SnakeBehavior {
-//    private Snake snake;
+//    private game.snake.Snake game.snake;
     private Food food; // random x,y pos powerup
     private Segment direction;
     private Integer boardLengthX;
@@ -11,7 +15,7 @@ public class SnakeBehavior {
     public SnakeBehavior(int boardLengthX, int boardLengthY) {
         this.boardLengthX = boardLengthX;
         this.boardLengthY = boardLengthY;
-//        this.snake = new Snake(0,0);
+//        this.game.snake = new game.snake.Snake(0,0);
         this.food = new Food(1,0);
         this.direction = new Segment(1,0);
 
@@ -24,8 +28,8 @@ public class SnakeBehavior {
         if (checkCollisionWithSnake(snake, tempSnakeFuturePosition)
         || checkCollisionWithBoundary(tempSnakeFuturePosition)) {
             snake.setGameOver(true);
-            // Game Over
-        } else if (tempSnakeFuturePosition.getOccupied(food)) {    // Future Position is Food
+            // game.snake.Game Over
+        } else if (tempSnakeFuturePosition.getOccupied(food)) {    // Future Position is game.snake.Food
             snake.updateHeadPosition(tempSnakeFuturePosition);
             food = getNewFoodLocation(snake);
 //            food = getDebugFood(getTempSnakeFuturePosition(tempSnakeFuturePosition,direction));
@@ -126,6 +130,7 @@ public class SnakeBehavior {
     }
 
     public Direction getRelativeFoodDirection(Snake snake) {
+        // Biased: always checks x first
         Direction snakeDir;
         if (snake.getHeadOfBody().getPosX() != food.getPosX()) {
             int num = (snake.getHeadOfBody().getPosX() - food.getPosX()) * -1;
@@ -133,6 +138,18 @@ public class SnakeBehavior {
             snakeDir = new Direction(num / Math.abs(num), 0);
         } else {
             int num = (snake.getHeadOfBody().getPosY() - food.getPosY()) * -1;
+            snakeDir = new Direction(0, num/Math.abs(num));
+        }
+        return snakeDir;
+    }
+
+    public Direction getRelativeDirection(Snake snake, Segment location) {
+        Direction snakeDir;
+        if (snake.getHeadOfBody().getPosX() != location.getPosX()) {
+            int num = (snake.getHeadOfBody().getPosX() - location.getPosX()) * -1;
+            snakeDir = new Direction(num / Math.abs(num), 0);
+        } else {
+            int num = (snake.getHeadOfBody().getPosY() - location.getPosY()) * -1;
             snakeDir = new Direction(0, num/Math.abs(num));
         }
         return snakeDir;

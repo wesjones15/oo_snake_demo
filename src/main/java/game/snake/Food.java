@@ -1,3 +1,7 @@
+package game.snake;
+
+import game.Segment;
+
 import java.util.Random;
 
 public class Food extends Segment {

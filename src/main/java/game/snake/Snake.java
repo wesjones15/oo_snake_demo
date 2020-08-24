@@ -1,3 +1,6 @@
+package game.snake;
+
+import game.Segment;
 import java.util.ArrayList;
 
 public class Snake {
@@ -75,7 +78,7 @@ public class Snake {
 
     public String toString() {
         StringBuilder out = new StringBuilder();
-        out.append("Snake Positions:\n");
+        out.append("game.snake.Snake Positions:\n");
         for (Segment segment: this.body) {
             out.append(segment.toString());
         }
@@ -102,6 +105,17 @@ public class Snake {
             dirY = 0;
         }
         return new Direction(dirX, dirY);
+    }
+
+    public Integer getIndexOfSnakeSegment(Segment location) {
+        int index = -1;
+        for (int i = 0; i < this.body.size(); i++) {
+            if (location.getOccupied(this.body.get(i))) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
 }

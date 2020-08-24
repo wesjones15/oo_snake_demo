@@ -1,3 +1,5 @@
+package game;
+
 public class Segment<Integer> {
     private int posX;
     private int posY;
