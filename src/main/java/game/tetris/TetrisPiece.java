@@ -37,4 +37,9 @@ public abstract class TetrisPiece {
 
     // getBottommostBlocks
     // for each block in piece, check if its position is within 1 of a placed block maybe
+    public ArrayList<Segment> getBottommostSegments() {
+        // check for lowest blocks on tetrisPiece
+        // lowest y piece for each horiz unit size
+        return new ArrayList<Segment>();
+    }
 }
