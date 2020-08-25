@@ -30,6 +30,7 @@ public class TetrisBehavior {
         }
     }
 
+    // Getters & Setters
     public TetrisPiece getCurrentTetrisPiece() {
         return currentTetrisPiece;
     }
@@ -62,6 +63,33 @@ public class TetrisBehavior {
         this.boardSizeY = boardSizeY;
     }
 
+    public ArrayList<TetrisPiece> getNextThreePieces() {
+        return nextThreePieces;
+    }
+
+    public TetrisPiece getHeldTetrisPiece() {
+        return heldTetrisPiece;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public ArrayList<TetrisSegment> getPlacedPieces() {
+        return placedPieces;
+    }
+
+    public void addPlacedPieces() {
+        this.placedPieces.addAll(currentTetrisPiece.getSegments());
+    }
+
+
+    // Collision Detection
+
     public Boolean checkCollisionWithPiece(TetrisPiece tetrisPiece) {
         boolean collide = false;
         for (Segment segment : placedPieces) {
@@ -85,94 +113,6 @@ public class TetrisBehavior {
             }
         }
         return onBottom;
-    }
-
-    public boolean isGameOver() {
-        return gameOver;
-    }
-
-    public void setGameOver(boolean gameOver) {
-        this.gameOver = gameOver;
-    }
-
-    public ArrayList<TetrisSegment> getPlacedPieces() {
-        return placedPieces;
-    }
-
-    public void addPlacedPieces() {
-        for (TetrisSegment segment : currentTetrisPiece.getSegments()) {
-            this.placedPieces.add(segment);
-        }
-    }
-
-    public TetrisPiece getNewTetrisPiece() {
-        int x = boardSizeX/2-2;
-        int y = -4;
-        Random random = new Random();
-        int num = random.nextInt(7);
-        if (num==0) {
-            return new LShapeBlockR(x,y);
-        } else if (num==1) {
-            return new LShapeBlockL(x,y);
-        } else if (num==2) {
-            return new LongBlock(x,y);
-        } else if (num==3) {
-            return new SBlockL(x,y);
-        } else if (num==4) {
-            return new SBlockR(x,y);
-        } else if (num==5) {
-            return new SquareBlock(x,y);
-        } else {
-            return new TBlock(x,y);
-        }
-    }
-
-    public void getNextTetrisPiece() {
-        currentTetrisPiece = nextThreePieces.get(0);
-        nextThreePieces.remove(0);
-        nextThreePieces.add(getNewTetrisPiece());
-    }
-
-    //TODO: call removeClearedRow multiple times
-    public void checkForRowClear() {
-        for (int i = boardSizeY-1; i >= 0; i--) {
-            int row_ct = 0;
-            for (int j = 0; j < boardSizeX; j++) {
-                Segment location = new Segment(j,i);
-                for (Segment piece : placedPieces) {
-                    if (location.getOccupied(piece)){
-                        row_ct += 1;
-                    }
-                }
-            }
-            if (row_ct >= boardSizeX) {
-                removeClearedRow(i);
-                // add points to score
-                row_ct = 0;
-            }
-        }
-    }
-
-    // TODO: refactor
-    public void removeClearedRow(int y_row) {
-        ArrayList<TetrisSegment> newPlacedPieces = new ArrayList<>();
-        for (int i = 0; i < placedPieces.size(); i++) {
-            if (placedPieces.get(i).getPosY() < y_row) {
-                TetrisSegment placedPiece = new TetrisSegment(placedPieces.get(i).getPosX(), placedPieces.get(i).getPosY()+1, placedPieces.get(i).getColor());
-                newPlacedPieces.add(placedPiece);
-            } else if (placedPieces.get(i).getPosY() != y_row) {
-                newPlacedPieces.add(placedPieces.get(i));
-            }
-        }
-        placedPieces = newPlacedPieces;
-        increaseScore();
-    }
-
-    public void moveTetrisPiece(int x, int y) {
-        currentTetrisPiece.updateAnchorPosition(x,y);
-        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
-        // check if tetris piece is past boundary and move to within bounds
-        isTetrisPiecePastBoundary();
     }
 
     public Integer getHighestPlacedPieceInColumn(Integer column) {
@@ -211,23 +151,91 @@ public class TetrisBehavior {
             }
             if (segment.getPosY() > boardSizeY) {
                 currentTetrisPiece.updateAnchorPosition(0,-1);
-//            } else if (segment.getPosY() > getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())) {
-//                currentTetrisPiece.updateAnchorPosition(0,(getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())-segment.getPosY()));
+                break;
+            } else if (segment.getPosY() >= getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())) {
+                currentTetrisPiece.updateAnchorPosition(0,(getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())-segment.getPosY()-1));
+                break;
             }
         }
         currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
 //        return tetrisPiece;
     }
 
-    public void checkForGameOver() {
-        for (Segment segment: placedPieces) {
-            if (segment.getPosY()<2) {
-                this.setGameOver(true);
-                break;
+
+    // Generate New Tetris Piece
+    public TetrisPiece getNewTetrisPiece() {
+        int x = boardSizeX/2-2;
+        int y = -4;
+        Random random = new Random();
+        int num = random.nextInt(7);
+        if (num==0) {
+            return new LShapeBlockR(x,y);
+        } else if (num==1) {
+            return new LShapeBlockL(x,y);
+        } else if (num==2) {
+            return new LongBlock(x,y);
+        } else if (num==3) {
+            return new SBlockL(x,y);
+        } else if (num==4) {
+            return new SBlockR(x,y);
+        } else if (num==5) {
+            return new SquareBlock(x,y);
+        } else {
+            return new TBlock(x,y);
+        }
+    }
+
+    public void getNextTetrisPiece() {
+        currentTetrisPiece = nextThreePieces.get(0);
+        nextThreePieces.remove(0);
+        nextThreePieces.add(getNewTetrisPiece());
+    }
+
+    // Row Clearing Logic
+    //TODO: call removeClearedRow multiple times
+    public void checkForRowClear() {
+        for (int i = boardSizeY-1; i >= 0; i--) {
+            int row_ct = 0;
+            for (int j = 0; j < boardSizeX; j++) {
+                Segment location = new Segment(j,i);
+                for (Segment piece : placedPieces) {
+                    if (location.getOccupied(piece)){
+                        row_ct += 1;
+                    }
+                }
+            }
+            if (row_ct >= boardSizeX) {
+                removeClearedRow(i);
+                // add points to score
+                row_ct = 0;
             }
         }
     }
 
+    // TODO: refactor
+    public void removeClearedRow(int y_row) {
+        ArrayList<TetrisSegment> newPlacedPieces = new ArrayList<>();
+        for (int i = 0; i < placedPieces.size(); i++) {
+            if (placedPieces.get(i).getPosY() < y_row) {
+                TetrisSegment placedPiece = new TetrisSegment(placedPieces.get(i).getPosX(), placedPieces.get(i).getPosY()+1, placedPieces.get(i).getColor());
+                newPlacedPieces.add(placedPiece);
+            } else if (placedPieces.get(i).getPosY() != y_row) {
+                newPlacedPieces.add(placedPieces.get(i));
+            }
+        }
+        placedPieces = newPlacedPieces;
+        increaseScore();
+    }
+
+    // Update Position of Tetris Piece
+    public void moveTetrisPiece(int x, int y) {
+        currentTetrisPiece.updateAnchorPosition(x,y);
+        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+        // check if tetris piece is past boundary and move to within bounds
+        isTetrisPiecePastBoundary();
+    }
+
+    // Main Game Loop
     public void run() {
         if (!isGameOver()) {
 
@@ -240,7 +248,6 @@ public class TetrisBehavior {
             // Check for collision with placed pieces
             if (checkCollisionWithScreenBottom(currentTetrisPiece) || checkCollisionWithPiece(currentTetrisPiece)){
                 addPlacedPieces();
-//                currentTetrisPiece = getNewTetrisPiece();
                 getNextTetrisPiece();
                 checkForRowClear();
             } else {
@@ -252,12 +259,24 @@ public class TetrisBehavior {
         }
     }
 
+    public void checkForGameOver() {
+        for (Segment segment: placedPieces) {
+            if (segment.getPosY()<2) {
+                this.setGameOver(true);
+                break;
+            }
+        }
+    }
+
+    // Execution of User Input
     //TODO: for actionUP and actionDOWN, add additional check for collision
+    //i think this is a fix
     public void actionUP() {
         int dist = getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())
-                - currentTetrisPiece.getAnchorPoint().getPosY() - 5;
-        currentTetrisPiece.updateAnchorPosition(0,dist);
-        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+                - currentTetrisPiece.getAnchorPoint().getPosY() - 4;
+        moveTetrisPiece(0,dist);
+//        currentTetrisPiece.updateAnchorPosition(0,dist);
+//        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
     }
 
     public void actionDOWN() {
@@ -295,13 +314,5 @@ public class TetrisBehavior {
             heldTetrisPiece.updateSegmentsRelativeToAnchorPoint();
             currentTetrisPiece = temp;
         }
-    }
-
-    public ArrayList<TetrisPiece> getNextThreePieces() {
-        return nextThreePieces;
-    }
-
-    public TetrisPiece getHeldTetrisPiece() {
-        return heldTetrisPiece;
     }
 }

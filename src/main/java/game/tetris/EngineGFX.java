@@ -22,8 +22,6 @@ public class EngineGFX extends JPanel implements ActionListener {
     private Integer boardLengthY;
 
     private TetrisBehavior tetrisBehavior;
-//    private TetrisPiece currentTetrisPiece;
-
 
     private final int board_grid_len = 40;
 
@@ -34,12 +32,8 @@ public class EngineGFX extends JPanel implements ActionListener {
     private Timer timer;
     private final int DELAY = 500;
 
-
-
     public EngineGFX() {
-
         this.tetrisBehavior = new TetrisBehavior();
-//        this.currentTetrisPiece = tetrisBehavior.getNewTetrisPiece();//new LShapeBlockR(tetrisBehavior.getBoardSizeX()/2,-4);
         initBoard();
     }
 
@@ -48,7 +42,6 @@ public class EngineGFX extends JPanel implements ActionListener {
         this.boardLengthY = y_size;
 
         this.tetrisBehavior = new TetrisBehavior();
-//        this.currentTetrisPiece = new LShapeBlockR(boardLengthX/2,-4);
         initBoard();
     }
 
@@ -73,16 +66,17 @@ public class EngineGFX extends JPanel implements ActionListener {
         doDrawing(g);
     }
 
-    // This replaces displaySnakeOnBoard()
-    //TODO reference currentTetrisPiece from within tetrisBehavior
+    // Game Board Display
     private void doDrawing(Graphics g) {
         int X_CONST = (board_grid_len - tetrisBehavior.getBoardSizeX()) /2 *DOT_SIZE;
 
         if (!tetrisBehavior.isGameOver()) {
+            // Displays Game Board
             g.setColor(Color.GRAY);
             g.fillRect(0+X_CONST,0,tetrisBehavior.getBoardSizeX()*DOT_SIZE, tetrisBehavior.getBoardSizeY()*DOT_SIZE);
 
 
+            // Displays Current Tetris Piece On Board
             for (Segment segment : tetrisBehavior.getCurrentTetrisPiece().getSegments()) {
                 g.setColor(tetrisBehavior.getCurrentTetrisPiece().getColor());
                 g.fillRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
@@ -90,15 +84,20 @@ public class EngineGFX extends JPanel implements ActionListener {
                 g.drawRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
 
+            // Displays Placed Pieces On Board
             for (TetrisSegment segment : tetrisBehavior.getPlacedPieces()) {
                 g.setColor(segment.getColor());
                 g.fillRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
                 g.setColor(Color.BLACK);
                 g.drawRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
+
+            // Displays Anchor Outline Around Current Tetris Piece
 //            g.setColor(Color.BLACK);
 //            g.drawRect(currentTetrisPiece.getAnchorPoint().getPosX()*DOT_SIZE+X_CONST,
 //                    currentTetrisPiece.getAnchorPoint().getPosY()*DOT_SIZE,4*DOT_SIZE,4*DOT_SIZE);
+
+            // Displays Held Tetris Piece
             int L_X_CONST = X_CONST / 2;
             if (null != tetrisBehavior.getHeldTetrisPiece()) {
                 //TODO diaplay held piece to the left of the board
@@ -111,7 +110,8 @@ public class EngineGFX extends JPanel implements ActionListener {
                     g.drawRect((segment.getPosX()*DOT_SIZE)+L_X_CONST, (segment.getPosY()+8)*DOT_SIZE,DOT_SIZE,DOT_SIZE);
                 }
             }
-            //TODO: display next three pieces
+
+            // Displays Next Three Tetris Pieces
             int R_X_CONST = X_CONST * 3 / 2;
             if (tetrisBehavior.getNextThreePieces() != null) {
                 for (int i = 0; i < tetrisBehavior.getNextThreePieces().size(); i++) {
@@ -135,15 +135,14 @@ public class EngineGFX extends JPanel implements ActionListener {
         }
     }
 
-
-    // This replaces run()
+    // Game Logic To Be Executed Each Tick
     @Override
     public void actionPerformed(ActionEvent e) {
         tetrisBehavior.run();
         repaint();
     }
 
-    // This replaces getDirectionFromUserInput()
+    // Capture And Interpret User Input
     private class TAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
