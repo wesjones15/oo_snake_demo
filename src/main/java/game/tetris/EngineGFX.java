@@ -89,6 +89,7 @@ public class EngineGFX extends JPanel implements ActionListener {
                 g.setColor(Color.BLACK);
                 g.drawRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
+
             for (TetrisSegment segment : tetrisBehavior.getPlacedPieces()) {
                 g.setColor(segment.getColor());
                 g.fillRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
@@ -98,6 +99,35 @@ public class EngineGFX extends JPanel implements ActionListener {
 //            g.setColor(Color.BLACK);
 //            g.drawRect(currentTetrisPiece.getAnchorPoint().getPosX()*DOT_SIZE+X_CONST,
 //                    currentTetrisPiece.getAnchorPoint().getPosY()*DOT_SIZE,4*DOT_SIZE,4*DOT_SIZE);
+            int L_X_CONST = X_CONST / 2;
+            if (null != tetrisBehavior.getHeldTetrisPiece()) {
+                //TODO diaplay held piece to the left of the board
+                drawText(g, "Held:", (tetrisBehavior.getHeldTetrisPiece().getAnchorPoint().getPosX()*DOT_SIZE)+L_X_CONST,
+                        (tetrisBehavior.getHeldTetrisPiece().getAnchorPoint().getPosY() +7)*DOT_SIZE);
+                for (Segment segment : tetrisBehavior.getHeldTetrisPiece().getSegments()) {
+                    g.setColor(tetrisBehavior.getHeldTetrisPiece().getColor());
+                    g.fillRect((segment.getPosX()*DOT_SIZE)+L_X_CONST, (segment.getPosY()+8)*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                    g.setColor(Color.BLACK);
+                    g.drawRect((segment.getPosX()*DOT_SIZE)+L_X_CONST, (segment.getPosY()+8)*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                }
+            }
+            //TODO: display next three pieces
+            int R_X_CONST = X_CONST * 3 / 2;
+            if (tetrisBehavior.getNextThreePieces() != null) {
+                for (int i = 0; i < tetrisBehavior.getNextThreePieces().size(); i++) {
+                    for (Segment segment : tetrisBehavior.getNextThreePieces().get(i).getSegments()) {
+                        drawText(g, "Next up:", (tetrisBehavior.getNextThreePieces().get(i).getAnchorPoint().getPosX()*DOT_SIZE)+R_X_CONST,
+                                (tetrisBehavior.getNextThreePieces().get(i).getAnchorPoint().getPosY() +7)*DOT_SIZE);
+
+                        g.setColor(tetrisBehavior.getNextThreePieces().get(i).getColor());
+                        g.fillRect((segment.getPosX()*DOT_SIZE)+R_X_CONST, (segment.getPosY() + 8 + (i * 5)) * DOT_SIZE, DOT_SIZE, DOT_SIZE);
+                        g.setColor(Color.BLACK);
+                        g.drawRect((segment.getPosX()*DOT_SIZE)+R_X_CONST, (segment.getPosY() + 8 + (i * 5)) * DOT_SIZE, DOT_SIZE, DOT_SIZE);
+                    }
+                }
+            }
+
+
             Toolkit.getDefaultToolkit().sync();
 
         } else {
@@ -109,30 +139,6 @@ public class EngineGFX extends JPanel implements ActionListener {
     // This replaces run()
     @Override
     public void actionPerformed(ActionEvent e) {
-//        if (!tetrisBehavior.isGameOver()) {
-//
-//            // Add game logic that occurs each tick
-//
-//            // maybe make this occur at different rate than tick to allow more frequent movement
-//            currentTetrisPiece.descend();
-//
-//            // Check for collision with bottom of screen
-//            if (tetrisBehavior.checkCollisionWithScreenBottom(currentTetrisPiece)){
-//                tetrisBehavior.addPlacedPieces(currentTetrisPiece);
-//                currentTetrisPiece = tetrisBehavior.getNewTetrisPiece();
-//                tetrisBehavior.checkForRowClear();
-//            }
-//
-//            // Check for collision with placed pieces
-//            if (tetrisBehavior.checkCollisionWithPiece(currentTetrisPiece)) {
-//                tetrisBehavior.addPlacedPieces(currentTetrisPiece);
-//                currentTetrisPiece = tetrisBehavior.getNewTetrisPiece();
-//                tetrisBehavior.checkForRowClear();
-//            }
-//
-//            // Check game over condition
-//            tetrisBehavior.checkForGameOver();
-//        }
         tetrisBehavior.run();
         repaint();
     }
@@ -144,47 +150,32 @@ public class EngineGFX extends JPanel implements ActionListener {
 
             int key = e.getKeyCode();
 
+            if ((key == KeyEvent.VK_SPACE)) {
+                tetrisBehavior.actionHold();
+            }
 
             if ((key == KeyEvent.VK_Z)) {
                 tetrisBehavior.actionRotateCCW();
-//                currentTetrisPiece.rotateCounterClockwise();
             }
 
             if ((key == KeyEvent.VK_X)) {
                 tetrisBehavior.actionRotateCW();
-//                currentTetrisPiece.rotateClockwise();
             }
 
             if ((key == KeyEvent.VK_LEFT)) {
                 tetrisBehavior.actionLEFT();
-//                currentTetrisPiece = tetrisBehavior.moveTetrisPiece(currentTetrisPiece, -1, 0);
-//                currentTetrisPiece.updateAnchorPosition(-1,0);
-//                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
             }
 
             if ((key == KeyEvent.VK_RIGHT)) {
                 tetrisBehavior.actionRIGHT();
-//                currentTetrisPiece = tetrisBehavior.moveTetrisPiece(currentTetrisPiece, 1, 0);
-//                currentTetrisPiece.updateAnchorPosition(1,0);
-//                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
             }
 
             if ((key == KeyEvent.VK_UP)) {
-                //move currentTetrisPiece to bottom of screen and lock
-                // pass entire tetrispiece into gethighestpieceincolumn and for each unique x get lowest and
-//                int dist = tetrisBehavior.getHighestPlacedPieceInColumn(currentTetrisPiece.getLowestSegment().getPosX()) -5- currentTetrisPiece.getAnchorPoint().getPosY();
-//                int dist = tetrisBehavior.getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())
-//                        - 5 - currentTetrisPiece.getAnchorPoint().getPosY();
-//                currentTetrisPiece.updateAnchorPosition(0,dist);
-//                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
                 tetrisBehavior.actionUP();
             }
 
             if ((key == KeyEvent.VK_DOWN)) {
-//                currentTetrisPiece = tetrisBehavior.moveTetrisPiece(currentTetrisPiece, 0, 1);
                 tetrisBehavior.actionDOWN();
-//                currentTetrisPiece.updateAnchorPosition(0,1);
-//                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
             }
         }
     }
@@ -197,5 +188,14 @@ public class EngineGFX extends JPanel implements ActionListener {
         g.setColor(Color.white);
         g.setFont(small);
         g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2);
+    }
+
+    private void drawText(Graphics g, String text, int x, int y) {
+        Font small = new Font("Helvetica", Font.BOLD, 14);
+        FontMetrics metr = getFontMetrics(small);
+
+        g.setColor(Color.white);
+        g.setFont(small);
+        g.drawString(text, x, y);
     }
 }
