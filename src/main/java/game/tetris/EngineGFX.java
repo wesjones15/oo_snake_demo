@@ -1,6 +1,7 @@
 package game.tetris;
 
 import game.Segment;
+import game.tetris.piece.LShapeBlockR;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +25,7 @@ public class EngineGFX extends JPanel implements ActionListener {
     private TetrisPiece currentTetrisPiece;
 
 
-    private final int board_grid_len = 10;
+    private final int board_grid_len = 20;
 
     private final int B_WIDTH = 300;
     private final int B_HEIGHT = 300;
@@ -33,27 +34,24 @@ public class EngineGFX extends JPanel implements ActionListener {
 //    private final int gridx[] = new int[ALL_DOTS];
 //    private final int gridy[] = new int[ALL_DOTS];
     private Timer timer;
-    private final int DELAY = 250;
+    private final int DELAY = 500;
 
 
 
     public EngineGFX() {
+
         this.tetrisBehavior = new TetrisBehavior();
-//        this.snakeBehavior = new SnakeBehavior(board_grid_len,board_grid_len);
-//        this.snake = new Snake(0,0);
-//        this.boardLengthX = this.snakeBehavior.getBoardLengthX();
-//        this.boardLengthY = this.snakeBehavior.getBoardLengthY();
-//        this.currentSnakeDirection = new Direction(0,0);
-//        this.currentSnakeDirection.setDirectionBySimple("down");
+        this.currentTetrisPiece = new LShapeBlockR(tetrisBehavior.getBoardSizeX()/2,-4);
         initBoard();
     }
 
-    public EngineGFX(int boardX, int boardY, int snakeX, int snakeY) {
-//        this.snakeBehavior = new SnakeBehavior(boardX,boardY);
-//        this.snake = new Snake(snakeX, snakeY);
-        this.boardLengthX = boardX;
-        this.boardLengthY = boardY;
+    public EngineGFX(int x_size, int y_size) {
+        this.boardLengthX = x_size;
+        this.boardLengthY = y_size;
 
+        this.tetrisBehavior = new TetrisBehavior();
+        this.currentTetrisPiece = new LShapeBlockR(boardLengthX/2,-4);
+        initBoard();
     }
 
     private void initBoard() {
@@ -80,27 +78,22 @@ public class EngineGFX extends JPanel implements ActionListener {
     // This replaces displaySnakeOnBoard()
     private void doDrawing(Graphics g) {
         if (!tetrisBehavior.isGameOver()) {
+            g.setColor(Color.GRAY);
+            g.fillRect(0,0,tetrisBehavior.getBoardSizeX()*DOT_SIZE, tetrisBehavior.getBoardSizeY()*DOT_SIZE);
 
-            for (int i = 0; i < boardLengthY; i++) {
-                for (int j = boardLengthX-1; j >= 0; j--) {
-                    Segment location = new Segment(j,i);
-                    // Draw Tetris Blocks on grid
-//                    if (location.getOccupied(this.snake.getHeadOfBody())) {
-//                        g.setColor(Color.GREEN);
-//                        g.fillRect(location.getPosX()*DOT_SIZE,location.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
-//                    } else if (snakeBehavior.checkCollisionWithSnake(this.snake, location)){// && this.game.snake.getIndexOfSnakeSegment(location) % 2 == 0){//location.getOccupied(this.game.snake.getHeadOfBody())) {
-//                        g.setColor(Color.BLUE);
-//                        g.fillRect(location.getPosX()*DOT_SIZE,location.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
-//                    } else if (snakeBehavior.getFood().getOccupied(location)) {
-//                        g.setColor(Color.RED);
-//                        g.fillRect(location.getPosX()*DOT_SIZE,location.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
-//                    } else {
-//                        g.setColor(Color.BLACK);
-//                        g.fillRect(location.getPosX()*DOT_SIZE,location.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
-//                    }
-                }
+            for (Segment segment : currentTetrisPiece.getSegments()) {
+                g.setColor(currentTetrisPiece.getColor());
+                g.drawRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
-
+            for (TetrisSegment segment : tetrisBehavior.getPlacedPieces()) {
+                g.setColor(segment.getColor());
+                g.fillRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                g.setColor(Color.BLACK);
+                g.drawRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+            }
+            g.setColor(Color.BLACK);
+            g.drawRect(currentTetrisPiece.getAnchorPoint().getPosX()*DOT_SIZE,
+                    currentTetrisPiece.getAnchorPoint().getPosY()*DOT_SIZE,4*DOT_SIZE,4*DOT_SIZE);
             Toolkit.getDefaultToolkit().sync();
 
         } else {
@@ -113,11 +106,25 @@ public class EngineGFX extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!tetrisBehavior.isGameOver()) {
+
             // Add game logic that occurs each tick
 
             // currentTetrisPiece = tetrisBehavior.applyMovement()
-
+            currentTetrisPiece.descend();
             // currentTetrisPiece.descend
+            if (tetrisBehavior.checkCollisionWithScreenBottom(currentTetrisPiece)){
+                tetrisBehavior.addPlacedPieces(currentTetrisPiece);
+                currentTetrisPiece = tetrisBehavior.getNewTetrisPiece();
+                tetrisBehavior.checkForRowClear();
+            }
+
+            if (tetrisBehavior.checkCollisionWithPiece(currentTetrisPiece)) {
+                tetrisBehavior.addPlacedPieces(currentTetrisPiece);
+                currentTetrisPiece = tetrisBehavior.getNewTetrisPiece();
+                tetrisBehavior.checkForRowClear();
+            }
+            //check for tetris piece colliding with bottom
+            //check for collision with placedPieces
 
             // Check game over condition
         }
@@ -132,21 +139,40 @@ public class EngineGFX extends JPanel implements ActionListener {
 
             int key = e.getKeyCode();
 
-//            if ((key == KeyEvent.VK_LEFT) && (!currentSnakeDirection.getSimpleDirection().equals("right"))) {
-//                currentSnakeDirection.setDirectionBySimple("left");
-//            }
-//
-//            if ((key == KeyEvent.VK_RIGHT) && (!currentSnakeDirection.getSimpleDirection().equals("left"))) {
-//                currentSnakeDirection.setDirectionBySimple("right");
-//            }
-//
-//            if ((key == KeyEvent.VK_UP) && (!currentSnakeDirection.getSimpleDirection().equals("down"))) {
-//                currentSnakeDirection.setDirectionBySimple("up");
-//            }
-//
-//            if ((key == KeyEvent.VK_DOWN) && (!currentSnakeDirection.getSimpleDirection().equals("up"))) {
-//                currentSnakeDirection.setDirectionBySimple("down");
-//            }
+
+            if ((key == KeyEvent.VK_Z)) {
+                currentTetrisPiece.rotateCounterClockwise();
+            }
+
+            if ((key == KeyEvent.VK_X)) {
+                currentTetrisPiece.rotateClockwise();
+            }
+
+            if ((key == KeyEvent.VK_LEFT)) {
+                currentTetrisPiece = tetrisBehavior.moveTetrisPiece(currentTetrisPiece, -1, 0);
+//                currentTetrisPiece.updateAnchorPosition(-1,0);
+//                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+            }
+
+            if ((key == KeyEvent.VK_RIGHT)) {
+                currentTetrisPiece = tetrisBehavior.moveTetrisPiece(currentTetrisPiece, 1, 0);
+//                currentTetrisPiece.updateAnchorPosition(1,0);
+//                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+            }
+
+            if ((key == KeyEvent.VK_UP)) {
+                //move currentTetrisPiece to bottom of screen and lock
+                int dist = tetrisBehavior.getHighestPlacedPieceInColumn(currentTetrisPiece.getLowestSegment().getPosX()) -5- currentTetrisPiece.getAnchorPoint().getPosY();
+                currentTetrisPiece.updateAnchorPosition(0,dist);
+                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+            }
+
+            if ((key == KeyEvent.VK_DOWN)) {
+                currentTetrisPiece = tetrisBehavior.moveTetrisPiece(currentTetrisPiece, 0, 1);
+
+//                currentTetrisPiece.updateAnchorPosition(0,1);
+//                currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+            }
         }
     }
 
