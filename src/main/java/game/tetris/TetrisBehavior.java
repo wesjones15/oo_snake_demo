@@ -7,13 +7,22 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class TetrisBehavior {
-//    private TetrisPiece currentTetrisPiece;
+    private TetrisPiece currentTetrisPiece;
 
     private ArrayList<TetrisSegment> placedPieces;
     private boolean gameOver = false;
     private int boardSizeX = 8;
     private int boardSizeY = 16;
     private int score = 0;
+
+    public TetrisBehavior() {
+        this.currentTetrisPiece = this.getNewTetrisPiece();
+        this.placedPieces = new ArrayList<TetrisSegment>();
+    }
+
+    public TetrisPiece getCurrentTetrisPiece() {
+        return currentTetrisPiece;
+    }
 
     public int getScore() {
         return score;
@@ -41,11 +50,6 @@ public class TetrisBehavior {
 
     public void setBoardSizeY(int boardSizeY) {
         this.boardSizeY = boardSizeY;
-    }
-
-
-    public TetrisBehavior() {
-        this.placedPieces = new ArrayList<TetrisSegment>();
     }
 
     public Boolean checkCollisionWithPiece(TetrisPiece tetrisPiece) {
@@ -85,15 +89,15 @@ public class TetrisBehavior {
         return placedPieces;
     }
 
-    public void addPlacedPieces(TetrisPiece tetrisPiece) {
-        for (TetrisSegment segment : tetrisPiece.getSegments()) {
+    public void addPlacedPieces() {
+        for (TetrisSegment segment : currentTetrisPiece.getSegments()) {
             this.placedPieces.add(segment);
         }
     }
 
     public TetrisPiece getNewTetrisPiece() {
-        int x = 4;
-        int y = 0;
+        int x = boardSizeX/2-2;
+        int y = -4;
         Random random = new Random();
         int num = random.nextInt(7);
         if (num==0) {
@@ -147,11 +151,12 @@ public class TetrisBehavior {
         increaseScore();
     }
 
-    public TetrisPiece moveTetrisPiece(TetrisPiece tetrisPiece, int x, int y) {
-        tetrisPiece.updateAnchorPosition(x,y);
-        tetrisPiece.updateSegmentsRelativeToAnchorPoint();
-        tetrisPiece = isTetrisPiecePastBoundary(tetrisPiece);
-        return tetrisPiece;
+    public void moveTetrisPiece(int x, int y) {
+        currentTetrisPiece.updateAnchorPosition(x,y);
+        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+        // check if tetris piece is past boundary and move to within bounds
+        isTetrisPiecePastBoundary();
+//        return tetrisPiece;
     }
 
     public Integer getHighestPlacedPieceInColumn(Integer column) {
@@ -178,21 +183,21 @@ public class TetrisBehavior {
         return highest;
     }
 
-    public TetrisPiece isTetrisPiecePastBoundary(TetrisPiece tetrisPiece) {
-        for (Segment segment : tetrisPiece.getSegments()) {
+    public void isTetrisPiecePastBoundary() {
+        for (Segment segment : currentTetrisPiece.getSegments()) {
             if (segment.getPosX() > boardSizeX-1) {
-                tetrisPiece.updateAnchorPosition(boardSizeX-1-segment.getPosX(),0);
+                currentTetrisPiece.updateAnchorPosition(boardSizeX-1-segment.getPosX(),0);
                 break;
             } else if (segment.getPosX() < 0) {
-                tetrisPiece.updateAnchorPosition(0-segment.getPosX(),0);
+                currentTetrisPiece.updateAnchorPosition(0-segment.getPosX(),0);
                 break;
             }
             if (segment.getPosY() > boardSizeY) {
-                tetrisPiece.updateAnchorPosition(0,-1);
+                currentTetrisPiece.updateAnchorPosition(0,-1);
             }
         }
-        tetrisPiece.updateSegmentsRelativeToAnchorPoint();
-        return tetrisPiece;
+        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+//        return tetrisPiece;
     }
 
     public void checkForGameOver() {
@@ -203,4 +208,60 @@ public class TetrisBehavior {
             }
         }
     }
+
+    public void run() {
+        if (!isGameOver()) {
+
+            // Add game logic that occurs each tick
+
+            // maybe make this occur at different rate than tick to allow more frequent movement
+            currentTetrisPiece.descend();
+
+            // Check for collision with bottom of screen
+            if (checkCollisionWithScreenBottom(currentTetrisPiece)){
+                addPlacedPieces();
+                currentTetrisPiece = getNewTetrisPiece();
+                checkForRowClear();
+            }
+
+            // Check for collision with placed pieces
+            if (checkCollisionWithPiece(currentTetrisPiece)) {
+                addPlacedPieces();
+                currentTetrisPiece = getNewTetrisPiece();
+                checkForRowClear();
+            }
+
+            // Check game over condition
+            checkForGameOver();
+        }
+    }
+
+    public void actionUP() {
+        int dist = getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())
+                - currentTetrisPiece.getAnchorPoint().getPosY() - 5;
+        currentTetrisPiece.updateAnchorPosition(0,dist);
+        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
+    }
+
+    public void actionDOWN() {
+        moveTetrisPiece(0, 1);
+    }
+
+    public void actionLEFT() {
+        moveTetrisPiece(-1, 0);
+    }
+
+    public void actionRIGHT() {
+        moveTetrisPiece(1, 0);
+    }
+
+    public void actionRotateCCW() {
+        currentTetrisPiece.rotateCounterClockwise();
+    }
+
+    public void actionRotateCW() {
+        currentTetrisPiece.rotateClockwise();
+    }
+
+
 }
