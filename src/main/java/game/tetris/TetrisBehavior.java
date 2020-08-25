@@ -194,22 +194,27 @@ public class TetrisBehavior {
     // Row Clearing Logic
     //TODO: call removeClearedRow multiple times
     public void checkForRowClear() {
-        for (int i = boardSizeY-1; i >= 0; i--) {
-            int row_ct = 0;
-            for (int j = 0; j < boardSizeX; j++) {
-                Segment location = new Segment(j,i);
-                for (Segment piece : placedPieces) {
-                    if (location.getOccupied(piece)){
-                        row_ct += 1;
+        boolean clearedRowPrev;
+        do {
+            clearedRowPrev = false;
+            for (int i = boardSizeY - 1; i >= 0; i--) {
+                int row_ct = 0;
+                for (int j = 0; j < boardSizeX; j++) {
+                    Segment location = new Segment(j, i);
+                    for (Segment piece : placedPieces) {
+                        if (location.getOccupied(piece)) {
+                            row_ct += 1;
+                        }
                     }
                 }
+                if (row_ct >= boardSizeX) {
+                    removeClearedRow(i);
+                    clearedRowPrev = true;
+                    // add points to score
+                    row_ct = 0;
+                }
             }
-            if (row_ct >= boardSizeX) {
-                removeClearedRow(i);
-                // add points to score
-                row_ct = 0;
-            }
-        }
+        } while (clearedRowPrev);
     }
 
     // TODO: refactor
