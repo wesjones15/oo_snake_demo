@@ -17,7 +17,7 @@ public class Main extends JFrame {
         setResizable(false);
         pack();
 
-        setTitle("game.snake.Snake");
+        setTitle("Not Tetris");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

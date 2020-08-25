@@ -75,25 +75,26 @@ public class EngineGFX extends JPanel implements ActionListener {
 
     // This replaces displaySnakeOnBoard()
     private void doDrawing(Graphics g) {
+        int X_CONST = (board_grid_len - tetrisBehavior.getBoardSizeX()) /2 *DOT_SIZE;
         if (!tetrisBehavior.isGameOver()) {
             g.setColor(Color.GRAY);
-            g.fillRect(0,0,tetrisBehavior.getBoardSizeX()*DOT_SIZE, tetrisBehavior.getBoardSizeY()*DOT_SIZE);
+            g.fillRect(0+X_CONST,0,tetrisBehavior.getBoardSizeX()*DOT_SIZE, tetrisBehavior.getBoardSizeY()*DOT_SIZE);
 
             for (Segment segment : currentTetrisPiece.getSegments()) {
                 g.setColor(currentTetrisPiece.getColor());
-                g.fillRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                g.fillRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
                 g.setColor(Color.BLACK);
-                g.drawRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                g.drawRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
             for (TetrisSegment segment : tetrisBehavior.getPlacedPieces()) {
                 g.setColor(segment.getColor());
-                g.fillRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                g.fillRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
                 g.setColor(Color.BLACK);
-                g.drawRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                g.drawRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
-            g.setColor(Color.BLACK);
-            g.drawRect(currentTetrisPiece.getAnchorPoint().getPosX()*DOT_SIZE,
-                    currentTetrisPiece.getAnchorPoint().getPosY()*DOT_SIZE,4*DOT_SIZE,4*DOT_SIZE);
+//            g.setColor(Color.BLACK);
+//            g.drawRect(currentTetrisPiece.getAnchorPoint().getPosX()*DOT_SIZE+X_CONST,
+//                    currentTetrisPiece.getAnchorPoint().getPosY()*DOT_SIZE,4*DOT_SIZE,4*DOT_SIZE);
             Toolkit.getDefaultToolkit().sync();
 
         } else {
@@ -109,9 +110,9 @@ public class EngineGFX extends JPanel implements ActionListener {
 
             // Add game logic that occurs each tick
 
-            // currentTetrisPiece = tetrisBehavior.applyMovement()
+            // maybe make this occur at different rate than tick to allow more frequent movement
             currentTetrisPiece.descend();
-            // currentTetrisPiece.descend
+
             if (tetrisBehavior.checkCollisionWithScreenBottom(currentTetrisPiece)){
                 tetrisBehavior.addPlacedPieces(currentTetrisPiece);
                 currentTetrisPiece = tetrisBehavior.getNewTetrisPiece();
@@ -183,7 +184,7 @@ public class EngineGFX extends JPanel implements ActionListener {
     }
 
     private void onGameOver(Graphics g) {
-        String msg = "Game Over";
+        String msg = "Game Over: "+tetrisBehavior.getScore();
         Font small = new Font("Helvetica", Font.BOLD, 14);
         FontMetrics metr = getFontMetrics(small);
 

@@ -13,6 +13,19 @@ public class TetrisBehavior {
     private boolean gameOver = false;
     private int boardSizeX = 8;
     private int boardSizeY = 16;
+    private int score = 0;
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public void increaseScore() {
+        this.score +=1;
+    }
 
     public int getBoardSizeX() {
         return boardSizeX;
@@ -131,6 +144,7 @@ public class TetrisBehavior {
             }
         }
         placedPieces = newPlacedPieces;
+        increaseScore();
     }
 
     public TetrisPiece moveTetrisPiece(TetrisPiece tetrisPiece, int x, int y) {
