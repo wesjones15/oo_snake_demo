@@ -93,7 +93,7 @@ public class TetrisBehavior {
 
 
     // Collision Detection
-
+//TODO: fix getting locked on pieces above or beside
     public Boolean checkCollisionWithPiece(TetrisPiece tetrisPiece) {
         boolean collide = false;
         for (Segment segment : placedPieces) {
@@ -104,6 +104,17 @@ public class TetrisBehavior {
                 }
             }
             if (collide) break;
+        }
+        return collide;
+    }
+
+    public Boolean checkCollisionWithSegment(Segment segment) {
+        boolean collide = false;
+        for (Segment piece : placedPieces) {
+            if (segment.getOccupied(piece)) {
+                collide = true;
+                break;
+            }
         }
         return collide;
     }
@@ -144,6 +155,8 @@ public class TetrisBehavior {
     }
 
     //TODO: refactor so that it takes into account placedPieces
+    //TODO: currently if you move sideways at bottom, it will jump to placedblocks above
+    // this is only an issue with horizontal movement, so maybe separate make special case
     public void isTetrisPiecePastBoundary() {
         for (Segment segment : currentTetrisPiece.getSegments()) {
             if (segment.getPosX() > boardSizeX-1) {
@@ -156,7 +169,8 @@ public class TetrisBehavior {
             if (segment.getPosY() > boardSizeY) {
                 currentTetrisPiece.updateAnchorPosition(0,-1);
                 break;
-            } else if (segment.getPosY() >= getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())) {
+            } else if (segment.getPosY() >= getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())
+            && checkCollisionWithSegment(segment)) {
                 currentTetrisPiece.updateAnchorPosition(0,(getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())-segment.getPosY()-1));
                 break;
             }

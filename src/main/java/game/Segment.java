@@ -36,7 +36,7 @@ public class Segment<Integer> {
     }
 
     public boolean isWithinOneOf(Segment other) {
-        return ((other.getPosY() - this.getPosY()) <=1) && (other.getPosX() == this.getPosX());
+        return ((other.getPosY() - this.getPosY()) ==1) && (other.getPosX() == this.getPosX());
     }
 
     public String toString() {
