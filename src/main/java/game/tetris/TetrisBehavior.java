@@ -119,6 +119,7 @@ public class TetrisBehavior {
         }
     }
 
+    // TODO: refactor
     public void removeClearedRow(int y_row) {
         ArrayList<TetrisSegment> newPlacedPieces = new ArrayList<>();
         for (int i = 0; i < placedPieces.size(); i++) {
@@ -133,22 +134,13 @@ public class TetrisBehavior {
     }
 
     public TetrisPiece moveTetrisPiece(TetrisPiece tetrisPiece, int x, int y) {
-//        if (tetrisPiece.getAnchorPoint().getPosX()+x < 0) {
-//            x = 0;
-//        }
-//        if (tetrisPiece.getAnchorPoint().getPosX()+x > boardSizeX-4) {
-//            x = 0;
-//        }
-//        if (tetrisPiece.getAnchorPoint().getPosY()+y > boardSizeY-4) {
-//            y = 0;
-//        }
         tetrisPiece.updateAnchorPosition(x,y);
         tetrisPiece.updateSegmentsRelativeToAnchorPoint();
         tetrisPiece = isTetrisPiecePastBoundary(tetrisPiece);
         return tetrisPiece;
     }
 
-    public Integer getHighestPlacedPieceInColumn(int column) {
+    public Integer getHighestPlacedPieceInColumn(Integer column) {
         int highest = boardSizeY;
         for (Segment segment : placedPieces) {
             if (segment.getPosX() == column) {
@@ -159,11 +151,22 @@ public class TetrisBehavior {
         return highest;
     }
 
+    public Integer getHighestPlacedPieceInColumns(ArrayList<Integer> columns) {
+        int highest = boardSizeY;
+        for (Integer column : columns) {
+            for (Segment segment : placedPieces) {
+                if (segment.getPosX() == column) {
+                    if (highest > segment.getPosY())
+                        highest = segment.getPosY();
+                }
+            }
+        }
+        return highest;
+    }
+
     public TetrisPiece isTetrisPiecePastBoundary(TetrisPiece tetrisPiece) {
-        boolean past = false;
         for (Segment segment : tetrisPiece.getSegments()) {
             if (segment.getPosX() > boardSizeX-1) {
-//                past = true;
                 tetrisPiece.updateAnchorPosition(boardSizeX-1-segment.getPosX(),0);
                 break;
             } else if (segment.getPosX() < 0) {
@@ -176,5 +179,14 @@ public class TetrisBehavior {
         }
         tetrisPiece.updateSegmentsRelativeToAnchorPoint();
         return tetrisPiece;
+    }
+
+    public void checkForGameOver() {
+        for (Segment segment: placedPieces) {
+            if (segment.getPosY()<2) {
+                this.setGameOver(true);
+                break;
+            }
+        }
     }
 }

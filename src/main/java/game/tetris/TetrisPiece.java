@@ -129,6 +129,18 @@ public abstract class TetrisPiece {
         return lowest;
     }
 
+    public ArrayList<Integer> getColumns() {
+        ArrayList<Integer> columns = new ArrayList<>();
+
+        for (Segment segment: segments) {
+            if (!columns.contains(segment.getPosX())) {
+                columns.add(segment.getPosX());
+            }
+
+        }
+        return columns;
+    }
+
     public void updateVerticalAnchorPosition(int amount) {
         this.anchorPoint.setPosY(this.anchorPoint.getPosY()+amount);
     }

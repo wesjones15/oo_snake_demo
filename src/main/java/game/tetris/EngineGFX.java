@@ -30,9 +30,7 @@ public class EngineGFX extends JPanel implements ActionListener {
     private final int B_WIDTH = 300;
     private final int B_HEIGHT = 300;
     private final int DOT_SIZE = B_HEIGHT / board_grid_len;
-    //    private final int ALL_DOTS = 900;
-//    private final int gridx[] = new int[ALL_DOTS];
-//    private final int gridy[] = new int[ALL_DOTS];
+
     private Timer timer;
     private final int DELAY = 500;
 
@@ -83,6 +81,8 @@ public class EngineGFX extends JPanel implements ActionListener {
 
             for (Segment segment : currentTetrisPiece.getSegments()) {
                 g.setColor(currentTetrisPiece.getColor());
+                g.fillRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+                g.setColor(Color.BLACK);
                 g.drawRect(segment.getPosX()*DOT_SIZE, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
             for (TetrisSegment segment : tetrisBehavior.getPlacedPieces()) {
@@ -123,10 +123,13 @@ public class EngineGFX extends JPanel implements ActionListener {
                 currentTetrisPiece = tetrisBehavior.getNewTetrisPiece();
                 tetrisBehavior.checkForRowClear();
             }
+
+
             //check for tetris piece colliding with bottom
             //check for collision with placedPieces
 
             // Check game over condition
+            tetrisBehavior.checkForGameOver();
         }
 
         repaint();
@@ -162,7 +165,10 @@ public class EngineGFX extends JPanel implements ActionListener {
 
             if ((key == KeyEvent.VK_UP)) {
                 //move currentTetrisPiece to bottom of screen and lock
-                int dist = tetrisBehavior.getHighestPlacedPieceInColumn(currentTetrisPiece.getLowestSegment().getPosX()) -5- currentTetrisPiece.getAnchorPoint().getPosY();
+                // pass entire tetrispiece into gethighestpieceincolumn and for each unique x get lowest and
+//                int dist = tetrisBehavior.getHighestPlacedPieceInColumn(currentTetrisPiece.getLowestSegment().getPosX()) -5- currentTetrisPiece.getAnchorPoint().getPosY();
+                int dist = tetrisBehavior.getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())
+                        - 5 - currentTetrisPiece.getAnchorPoint().getPosY();
                 currentTetrisPiece.updateAnchorPosition(0,dist);
                 currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
             }
