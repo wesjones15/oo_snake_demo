@@ -23,7 +23,7 @@ public class EngineGFX extends JPanel implements ActionListener {
 
     private TetrisBehavior tetrisBehavior;
 
-    private final int board_grid_len = 40;
+    private final int board_grid_len = 24;
 
     private final int B_WIDTH = 400;
     private final int B_HEIGHT = 400;
@@ -98,7 +98,8 @@ public class EngineGFX extends JPanel implements ActionListener {
 //                    currentTetrisPiece.getAnchorPoint().getPosY()*DOT_SIZE,4*DOT_SIZE,4*DOT_SIZE);
 
             // Displays Held Tetris Piece
-            int L_X_CONST = X_CONST / 2;
+//            int L_X_CONST = (X_CONST / 2);
+            int L_X_CONST = -(X_CONST / 4);
             if (null != tetrisBehavior.getHeldTetrisPiece()) {
                 //TODO diaplay held piece to the left of the board
                 drawText(g, "Held:", (tetrisBehavior.getHeldTetrisPiece().getAnchorPoint().getPosX()*DOT_SIZE)+L_X_CONST,
@@ -111,8 +112,12 @@ public class EngineGFX extends JPanel implements ActionListener {
                 }
             }
 
+            drawText(g, "Score: "+tetrisBehavior.getScore(), (tetrisBehavior.getBoardSizeX()/3*DOT_SIZE)+L_X_CONST,
+                    (1)*DOT_SIZE);
+
             // Displays Next Three Tetris Pieces
-            int R_X_CONST = X_CONST * 3 / 2;
+//            int R_X_CONST = X_CONST * 3 / 2;
+            int R_X_CONST = X_CONST * 7 / 3;
             if (tetrisBehavior.getNextThreePieces() != null) {
                 for (int i = 0; i < tetrisBehavior.getNextThreePieces().size(); i++) {
                     for (Segment segment : tetrisBehavior.getNextThreePieces().get(i).getSegments()) {

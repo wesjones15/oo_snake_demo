@@ -13,8 +13,8 @@ public class TetrisBehavior {
     private TetrisPiece heldTetrisPiece;
     private ArrayList<TetrisSegment> placedPieces;
     private boolean gameOver = false;
-    private int boardSizeX = 8;
-    private int boardSizeY = 16;
+    private int boardSizeX = 10;
+    private int boardSizeY = 20;
     private int score = 0;
 
     public TetrisBehavior() {
@@ -45,6 +45,10 @@ public class TetrisBehavior {
 
     public void increaseScore() {
         this.score +=1;
+    }
+
+    public void increaseScoreByAmount(int amount) {
+        this.score = this.score + amount;
     }
 
     public int getBoardSizeX() {
@@ -195,6 +199,7 @@ public class TetrisBehavior {
     //TODO: call removeClearedRow multiple times
     public void checkForRowClear() {
         boolean clearedRowPrev;
+        int points = 0;
         do {
             clearedRowPrev = false;
             for (int i = boardSizeY - 1; i >= 0; i--) {
@@ -209,12 +214,14 @@ public class TetrisBehavior {
                 }
                 if (row_ct >= boardSizeX) {
                     removeClearedRow(i);
+                    points = points == 0 ? 1 : points * 2;
                     clearedRowPrev = true;
                     // add points to score
                     row_ct = 0;
                 }
             }
         } while (clearedRowPrev);
+        increaseScoreByAmount(points);
     }
 
     // TODO: refactor
@@ -229,7 +236,6 @@ public class TetrisBehavior {
             }
         }
         placedPieces = newPlacedPieces;
-        increaseScore();
     }
 
     // Update Position of Tetris Piece
