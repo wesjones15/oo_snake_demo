@@ -92,6 +92,11 @@ public class EngineGFX extends JPanel implements ActionListener {
                 g.drawRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
             }
 
+            for (TetrisSegment segment : tetrisBehavior.getLandingSpot().getSegments()) {
+                g.setColor(segment.getColor());
+                g.drawRect(segment.getPosX()*DOT_SIZE+X_CONST, segment.getPosY()*DOT_SIZE,DOT_SIZE,DOT_SIZE);
+            }
+
             // Displays Anchor Outline Around Current Tetris Piece
 //            g.setColor(Color.BLACK);
 //            g.drawRect(currentTetrisPiece.getAnchorPoint().getPosX()*DOT_SIZE+X_CONST,

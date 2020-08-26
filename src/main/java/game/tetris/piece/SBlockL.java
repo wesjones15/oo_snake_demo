@@ -17,6 +17,12 @@ public class SBlockL extends TetrisPiece {
         this.initPiece();
     }
 
+    public SBlockL() {
+        this.setAnchorPoint(new Segment(0,0));
+        this.setState(0);
+        this.initPiece();
+    }
+
     public Color getColor() {
         return color;
     }

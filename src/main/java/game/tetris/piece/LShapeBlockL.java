@@ -19,6 +19,12 @@ public class LShapeBlockL extends TetrisPiece {
         this.initPiece();
     }
 
+    public LShapeBlockL() {
+        this.setAnchorPoint(new Segment(0,0));
+        this.setState(0);
+        this.initPiece();
+    }
+
     public Color getColor() {
         return color;
     }

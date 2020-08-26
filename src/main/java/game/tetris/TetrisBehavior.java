@@ -300,8 +300,6 @@ public class TetrisBehavior {
         int dist = getHighestPlacedPieceInColumns(currentTetrisPiece.getColumns())
                 - currentTetrisPiece.getAnchorPoint().getPosY() - 4;
         moveTetrisPiece(0,dist);
-//        currentTetrisPiece.updateAnchorPosition(0,dist);
-//        currentTetrisPiece.updateSegmentsRelativeToAnchorPoint();
     }
 
     public void actionDOWN() {
@@ -338,6 +336,24 @@ public class TetrisBehavior {
             heldTetrisPiece.setAnchorPoint(newAnchor);
             heldTetrisPiece.updateSegmentsRelativeToAnchorPoint();
             currentTetrisPiece = temp;
+        }
+    }
+
+    //todo get landingspot currently updates currenttetrispiece when logically it shouldnt
+    public TetrisPiece getLandingSpot() {
+        try {
+            Class<? extends TetrisPiece> shape = currentTetrisPiece.getClass();
+            TetrisPiece landedPiece = shape.newInstance();
+            landedPiece.setState(currentTetrisPiece.getState());
+            landedPiece.setAnchorPoint(new Segment(currentTetrisPiece.getAnchorPoint().getPosX(),currentTetrisPiece.getAnchorPoint().getPosY()));
+            landedPiece.updateSegmentsRelativeToAnchorPoint();
+            int dist = getHighestPlacedPieceInColumns(landedPiece.getColumns())
+                    - landedPiece.getAnchorPoint().getPosY() - 4 ;
+            landedPiece.updateAnchorPosition(0,dist);
+            landedPiece.updateSegmentsRelativeToAnchorPoint();
+            return landedPiece;
+        } catch (Exception e) {
+            return null;
         }
     }
 }
