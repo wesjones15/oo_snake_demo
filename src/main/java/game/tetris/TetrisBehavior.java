@@ -141,6 +141,7 @@ public class TetrisBehavior {
         return highest;
     }
 
+    //TODO: refactor so that it does not place pieces one above destination
     public Integer getHighestPlacedPieceInColumns(ArrayList<Integer> columns) {
         int highest = boardSizeY;
         for (Integer column : columns) {
@@ -339,7 +340,7 @@ public class TetrisBehavior {
         }
     }
 
-    //todo get landingspot currently updates currenttetrispiece when logically it shouldnt
+    //todo landedPiece currently displays at one spot above where it should be for some pieces
     public TetrisPiece getLandingSpot() {
         try {
             Class<? extends TetrisPiece> shape = currentTetrisPiece.getClass();

@@ -115,7 +115,20 @@ public abstract class TetrisPiece {
     // getBottommostBlocks
     // for each block in piece, check if its position is within 1 of a placed block maybe
     public ArrayList<TetrisSegment> getBottommostSegments() {
-
+//        ArrayList<TetrisSegment> lowests = new ArrayList<>();
+//
+//        for (Integer x: getColumns()) {
+//            TetrisSegment toAdd = null;
+//            for (TetrisSegment segment: getSegments()) {
+//                if (segment.getPosX() == x && toAdd == null){
+//                    toAdd = segment;
+//                } else if (segment.getPosX() == x && toAdd.getPosY() < segment.getPosY()) {
+//                    toAdd = segment;
+//                }
+//            }
+//            lowests.add(toAdd);
+//        }
+//        return lowests;
         return getSegments();
     }
 
