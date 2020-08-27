@@ -1,2 +1,4 @@
-package game;public class SegmentTest {
+package game;
+
+public class SegmentTest {
 }
