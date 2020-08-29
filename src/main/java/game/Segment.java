@@ -25,11 +25,11 @@ public class Segment<Integer> {
         this.posY = posY;
     }
 
-    public Segment updateSegmentPosition(int deltaX, int deltaY) {
-        this.posX += deltaX;
-        this.posY += deltaY;
-        return this;
-    }
+//    public Segment updateSegmentPosition(int deltaX, int deltaY) {
+//        this.posX += deltaX;
+//        this.posY += deltaY;
+//        return this;
+//    }
 
     public boolean getOccupied(Segment other) {
         return (other.getPosX() == this.getPosX()) && (other.getPosY() == this.getPosY());

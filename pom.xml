@@ -12,11 +12,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.3.3.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <version>2.3.3.RELEASE</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -28,6 +30,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>3.8.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -37,6 +40,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.4.RELEASE</version>
             </plugin>
         </plugins>
     </build>
